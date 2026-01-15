@@ -30,6 +30,6 @@ export async function GET(
   });
 
   return NextResponse.json(
-    enrollments.map((e) => e.user)
+  enrollments.map((e: { user: { id: string; email: string } }) => e.user)
   );
 }
