@@ -8,154 +8,156 @@ export default function DashboardPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#fcfcfd]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 rounded-xl border-2 border-indigo-100"></div>
+            <div className="absolute inset-0 rounded-xl border-t-2 border-indigo-600 animate-spin"></div>
+          </div>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Syncing Data</p>
+        </div>
       </div>
     );
   }
 
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
-        <p className="text-slate-600 font-medium">You are not logged in</p>
-      </div>
-    );
-  }
+  if (!session) return null;
 
   const role = session.user.role;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#fcfcfd] text-slate-900">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-200">
-                <span className="text-white font-bold text-xs">EF</span>
-              </div>
-              <span className="font-bold text-slate-900 tracking-tight hidden sm:block">
-                Edu Fairuzullah
-              </span>
+      <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/60">
+        <div className="max-w-6xl mx-auto px-6 h-20 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-xl shadow-slate-200">
+              <span className="text-white font-black italic text-sm">EF</span>
             </div>
+            <span className="font-black text-xl tracking-tighter hidden sm:block">EduFairuz</span>
+          </div>
 
-            <div className="flex items-center gap-4">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-slate-900 leading-none">
-                  {session.user.name || "User"}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">{session.user.email}</p>
-              </div>
-              <button
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                className="rounded-xl bg-slate-50 px-4 py-2 text-slate-600 text-sm font-bold hover:bg-red-50 hover:text-red-600 transition-colors border border-slate-200"
-              >
-                Logout
-              </button>
+          <div className="flex items-center gap-6">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-black text-slate-900 leading-none">{session.user.name}</p>
+              <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-tight">{session.user.email}</p>
             </div>
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 text-xs font-black hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all active:scale-95 shadow-sm"
+            >
+              LOGOUT
+            </button>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-6xl mx-auto px-6 py-12">
         {/* Welcome Section */}
-        <header className="mb-10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-extrabold text-slate-900">
+        <header className="mb-16">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <h1 className="text-5xl font-black tracking-tight bg-gradient-to-br from-slate-900 to-slate-500 bg-clip-text text-transparent">
                 Dashboard
               </h1>
-              <p className="text-slate-500 mt-1 font-medium">
-                Welcome back! Here is what’s happening with your account.
+              <p className="text-slate-500 text-lg font-medium">
+                Welcome back, <span className="text-slate-900 font-bold">{session.user.name}</span>.
               </p>
             </div>
-            <div className="inline-flex items-center px-4 py-2 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-bold">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse mr-2" />
-              Role: {role}
+
+            {/* ACTION BUTTONS */}
+            <div className="flex items-center gap-4">
+              {role === "EDUCATOR" && (
+                <Link
+                  href="/educator/courses/new"
+                  className="px-6 py-3 rounded-2xl bg-indigo-600 text-white text-sm font-black hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2"
+                >
+                  <span className="text-lg">+</span> Create New Course
+                </Link>
+              )}
+              <div className="hidden md:flex items-center px-4 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 mr-3 animate-pulse" />
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{role}</span>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Action Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Common Card */}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <DashboardCard
             title="Browse Courses"
-            description="Explore our library of curated learning materials."
+            description="Explore our library of curated learning materials and master new skills."
             link="/courses"
             icon="📚"
-            accent="indigo"
           />
 
-          {/* Educator Only */}
-          {role === "EDUCATOR" && (
-            <DashboardCard
-              title="Manage Courses"
-              description="Create new content or update existing lectures."
-              link="/educator/courses"
-              icon="🛠️"
-              accent="emerald"
-            />
-          )}
-
-          {/* Learner Only */}
           {role === "LEARNER" && (
             <DashboardCard
               title="My Learning"
-              description="Pick up exactly where you left off last time."
+              description="Continue your education and view your personal progress and certificates."
               link="/courses"
               icon="🎯"
-              accent="blue"
             />
           )}
+
+          {role === "EDUCATOR" && (
+            <DashboardCard
+              title="Course Management"
+              description="Update your existing curriculum, manage students, and view analytics."
+              link="/educator/courses"
+              icon="🛠️"
+            />
+          )}
+
+          {/* Dynamic Info Card */}
+          <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white flex flex-col justify-between shadow-2xl shadow-slate-200 relative overflow-hidden group">
+            <div className="relative z-10">
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-60">System Notification</p>
+              <h3 className="text-2xl font-black mt-2 leading-tight">
+                {role === "EDUCATOR" ? "Ready to teach?" : "Ready to learn?"}
+              </h3>
+              <p className="text-slate-400 text-xs mt-2">Check your latest notifications and messages.</p>
+            </div>
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full group-hover:scale-125 transition-transform duration-700"></div>
+          </div>
         </div>
       </main>
     </div>
   );
 }
 
-/* Reusable Card Component */
 function DashboardCard({
   title,
   description,
   link,
   icon,
-  accent,
 }: {
   title: string;
   description: string;
   link: string;
   icon: string;
-  accent: "indigo" | "emerald" | "blue" | "slate";
 }) {
-  const accents = {
-    indigo: "bg-indigo-600 shadow-indigo-200 hover:bg-indigo-700",
-    emerald: "bg-emerald-600 shadow-emerald-200 hover:bg-emerald-700",
-    blue: "bg-blue-600 shadow-blue-200 hover:bg-blue-700",
-    slate: "bg-slate-700 shadow-slate-200 hover:bg-slate-800",
-  };
-
   return (
-    <div className="group relative bg-white rounded-3xl p-8 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div className="text-3xl mb-4">{icon}</div>
-      <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+    <div className="group bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+      <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">
+        {icon}
+      </div>
+      <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-3">
         {title}
       </h3>
-      <p className="mt-2 text-slate-500 text-sm font-medium leading-relaxed">
+      <p className="text-slate-500 text-sm font-medium leading-relaxed mb-10 flex-1">
         {description}
       </p>
 
-      <div className="mt-8 flex items-center justify-between">
-        <Link
-          href={link}
-          className={`inline-flex items-center px-5 py-2.5 rounded-xl text-white text-sm font-bold transition-all shadow-lg ${accents[accent]}`}
-        >
-          Open Panel
-          <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </Link>
-      </div>
+      <Link
+        href={link}
+        className="inline-flex items-center justify-center w-full py-4 rounded-2xl bg-slate-50 text-slate-900 text-xs font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all duration-300"
+      >
+        Enter Panel
+        <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </Link>
     </div>
   );
 }

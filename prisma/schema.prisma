@@ -7,23 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  EDUCATOR
+  LEARNER
+}
+
 model User {
-  id       String   @id @default(uuid())
-  name     String
-  email    String   @unique
-  password String
-  role     Role
-  courses  Course[] @relation("EducatorCourses")
-  enrollments  Enrollment[] 
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role
+
+  courses      Course[]      @relation("EducatorCourses")
+  enrollments  Enrollment[]
 }
 
 model Course {
-  id          String @id @default(uuid())
-  title       String
+  id           String        @id @default(uuid())
+  title        String
   description String
-  educatorId  String
-  educator    User   @relation("EducatorCourses", fields: [educatorId], references: [id])
-  enrollments Enrollment[]
+  educatorId   String
+
+  educator     User          @relation("EducatorCourses", fields: [educatorId], references: [id])
+  enrollments  Enrollment[]
 }
 
 model Enrollment {
@@ -36,10 +43,4 @@ model Enrollment {
   course Course @relation(fields: [courseId], references: [id])
 
   @@unique([userId, courseId])
-}
-
-
-enum Role {
-  EDUCATOR
-  LEARNER
 }

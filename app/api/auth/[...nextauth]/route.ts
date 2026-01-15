@@ -1,5 +1,3 @@
-export const runtime = "nodejs";
-
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
@@ -9,29 +7,24 @@ const prisma = new PrismaClient();
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { type: "email" },
+        password: { type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-
-        const user = await prisma.user.findUnique({
+        if (!credentials) return null;
+        return prisma.user.findUnique({
           where: { email: credentials.email },
         });
-
-        if (!user) return null;
-
-        return user;
       },
     }),
   ],
 callbacks: {
   jwt({ token, user }) {
     if (user) {
-      token.id = user.id;
-      token.role = user.role;
+      const u = user as { id: string; role: string };
+      token.id = u.id;
+      token.role = u.role;
     }
     return token;
   },
@@ -46,5 +39,4 @@ callbacks: {
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

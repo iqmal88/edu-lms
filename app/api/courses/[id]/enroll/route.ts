@@ -3,24 +3,27 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 const prisma = new PrismaClient();
 
 export async function POST(
   req: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
 
   if (!session || session.user.role !== "LEARNER") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Only learners can enroll" },
+      { status: 403 }
+    );
   }
+
+  const { id: courseId } = await context.params;
 
   await prisma.enrollment.create({
     data: {
       userId: session.user.id,
-      courseId: context.params.id,
+      courseId,
     },
   });
 
