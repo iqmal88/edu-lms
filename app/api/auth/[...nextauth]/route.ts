@@ -20,18 +20,21 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 callbacks: {
-  jwt({ token, user }) {
+  async jwt({ token, user }) {
     if (user) {
-      const u = user as { id: string; role: string };
-      token.id = u.id;
-      token.role = u.role;
+      token.id = user.id;
+      token.role = user.role;
     }
     return token;
   },
-  session({ session, token }) {
+
+  async session({ session, token }) {
     if (session.user) {
       session.user.id = token.id as string;
-      session.user.role = token.role as string;
+
+      if (token.role === "EDUCATOR" || token.role === "LEARNER") {
+        session.user.role = token.role;
+      }
     }
     return session;
   },
