@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
@@ -17,12 +17,26 @@ export async function GET(
 
   const { id } = await context.params;
 
-  const enrollments = await prisma.enrollment.findMany({
-    where: {
-      courseId: id,
-      course: { educatorId: session.user.id },
+  // ✅ Explicit Prisma typing
+  const enrollments: Prisma.EnrollmentGetPayload<{
+    include: {
+      user: {
+        select: {
+          id: true;
+          email: true;
+        };
+      };
+    };
+  }>[] = await prisma.enrollment.findMany({
+    where: { courseId: id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
     },
-    include: { user: true },
   });
 
   return NextResponse.json(
